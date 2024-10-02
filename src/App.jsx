@@ -1,9 +1,10 @@
 import { useState } from 'react'
+import Home from './Pages/Home/Home'
 function App() {
   
   return (
   <>
-    <h2 className='bg-red-400 text-white text-center'>Hello Bangladesh!</h2>
+    <Home/>
   </>
   )
 }

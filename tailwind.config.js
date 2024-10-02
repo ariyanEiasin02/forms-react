@@ -5,7 +5,14 @@ export default {
     "./src/**/*.{js,ts,jsx,tsx}",
   ],
   theme: {
-    extend: {},
+    extend: {
+      maxWidth:{
+        "container" : "1180px"
+      },
+      fontFamily:{
+        "poppins" : "Poppins, system-ui"
+      }
+    },
   },
   plugins: [],
 }
