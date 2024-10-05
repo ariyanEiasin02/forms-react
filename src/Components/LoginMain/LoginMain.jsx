@@ -58,6 +58,14 @@ const LoginMain = () => {
                 });
         }
     }
+    const handleGoogle = () => {
+        signInWithPopup(auth, provider)
+            .then(() => {
+                setTimeout(() => {
+                    navigate("/")
+                })
+            })
+    }
     return (
         <>
             <section className='md:h-screen bg-white'>
@@ -106,7 +114,7 @@ const LoginMain = () => {
                                 <div className="pl-6 mr-2">
                                     <span><FcGoogle className='text-3xl' /></span>
                                 </div>
-                                <div className="">
+                                <div onClick={handleGoogle} className="">
                                     <h3 className='font-poppins font-normal text-base text-regText tracking-normal py-3'>Login with Google</h3>
                                 </div>
                             </div>

@@ -69,11 +69,10 @@ const RegisterMain = () => {
                     setTimeout(() => {
                       navigate('/login')
                       }, 3000)
-                    
-                  }).then(() => {
+
                     set(ref(db, 'users/' + user.user.uid), {
-                      username: user.user.displayName,
-                      email: user.user.email,
+                        username: user.user.displayName,
+                        email: user.user.email,
                     });
                   })
                   .catch((error) => {
