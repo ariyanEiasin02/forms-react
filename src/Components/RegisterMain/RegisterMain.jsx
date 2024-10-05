@@ -1,9 +1,16 @@
 import React, { useState } from 'react'
 import { MdOutlineEmail, MdErrorOutline } from "react-icons/md";
 import { CiUser, CiLock, CiUnlock } from "react-icons/ci";
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { getAuth, createUserWithEmailAndPassword, updateProfile, sendEmailVerification } from "firebase/auth";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { getDatabase, ref, set } from "firebase/database";
 
 const RegisterMain = () => {
+    const auth = getAuth();
+    const db = getDatabase();
+    const navigate = useNavigate();
     const [userName, setUserName] = useState('')
     const [userNameError, setUserNameError] = useState('')
     const [email, setEmail] = useState()
@@ -41,15 +48,50 @@ const RegisterMain = () => {
 
         if (!password) {
             setPasswordError("Required")
-        }else {
+        } else {
             if (!/^(?=.*[0-9]).{8,16}$/.test(password)) {
-              setPasswordError("Please Enter At Least 8 Characters")
+                setPasswordError("Please Enter At Least 8 Characters")
             }
-          }
+        }
+        if (userName && email && password && /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email) && /^(?=.*[0-9]).{8,16}$/.test(password)) {
+            createUserWithEmailAndPassword(auth, email, password)
+            .then((user) => {
+                updateProfile(auth.currentUser, {
+                  displayName: userName,
+                  photoURL: "./src/assets/person.jpg"
+                })
+                  .then(() => {
+                    toast.success("Register User Successfully!")
+                    sendEmailVerification(auth.currentUser)
+                    setEmail('')
+                    setUserName('')
+                    setPassword('')
+                    setTimeout(() => {
+                      navigate('/login')
+                      }, 3000)
+                    
+                  }).then(() => {
+                    set(ref(db, 'users/' + user.user.uid), {
+                      username: user.user.displayName,
+                      email: user.user.email,
+                    });
+                  })
+                  .catch((error) => {
+                    if (error.code.includes('auth/email-already-in-use')) {
+                        setEmailError("This Email Already Exist");
+                      }
+                  });
+              }).catch((error) => {
+                if (error.code.includes('auth/email-already-in-use')) {
+                    setEmailError("This Email Already Exist");
+                  }
+              });
+        }
     }
     return (
         <>
             <section className='md:h-screen bg-white'>
+            <ToastContainer position="top-center" theme="dark" closeOnClick />
                 <div className="text-center py-12">
                     <div className="bg-white mt-[60px] md:w-[500px] py-8 mx-auto shadow-2xl rounded-xl px-6">
                         <div className="">

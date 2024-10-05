@@ -4,7 +4,7 @@ import { RiLoginCircleLine } from "react-icons/ri";
 import { Link } from 'react-router-dom';
 const HomeMain = () => {
   return (
-    <div className='py-4 bg-white'>
+    <div className='py-4 bg-white md:px-0 px-4'>
         <div className="max-w-container mx-auto">
             <nav className='flex justify-between items-center'>
                 <div className="flex items-center">

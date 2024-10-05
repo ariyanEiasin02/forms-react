@@ -2,14 +2,21 @@ import React, { useState } from 'react'
 import { MdOutlineEmail, MdErrorOutline } from "react-icons/md";
 import { CiUser, CiLock, CiUnlock } from "react-icons/ci";
 import { FcGoogle } from "react-icons/fc";
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { GoogleAuthProvider, getAuth, signInWithEmailAndPassword, signInWithPopup } from "firebase/auth";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 const LoginMain = () => {
+    const auth = getAuth();
+    const provider = new GoogleAuthProvider();
+    const navigate = useNavigate()
     const [email, setEmail] = useState()
     const [emailError, setEmailError] = useState()
     const [password, setPassword] = useState()
     const [passwordError, setPasswordError] = useState()
     const [lock, setLock] = useState(false)
-
+    const [emailPasswordError, setEmailPasswordError] = useState('')
     const handleEmail = (e) => {
         setEmail(e.target.value)
         setEmailError("")
@@ -36,11 +43,25 @@ const LoginMain = () => {
             if (!/^(?=.*[0-9]).{8,16}$/.test(password)) {
               setPasswordError("Please Enter At Least 8 Characters")
             }
-          }
+        }
+        if (email && password && /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email) && /^(?=.*[0-9]).{8,16}$/.test(password)) {
+            signInWithEmailAndPassword(auth, email, password)
+                .then(() => {
+                    toast.success("Login Successfully!")
+                    setTimeout(() => {
+                        navigate('/')
+                        }, 3000)
+                }).catch((error) => {
+                    if (error.code.includes('auth/invalid-credential')) {
+                        setEmailPasswordError("Invalid-credential");
+                    }
+                });
+        }
     }
     return (
         <>
             <section className='md:h-screen bg-white'>
+            <ToastContainer position="top-center" theme="dark" closeOnClick />
                 <div className="text-center py-12">
                     <div className="bg-white mt-[80px] md:w-[500px] py-8 mx-auto shadow-2xl rounded-xl px-6">
                         <div className="">
@@ -48,6 +69,7 @@ const LoginMain = () => {
                             <p className='font-poppins font-light text-base mt-2 text-[#7a7f9a]'>Sign in to continue to Forms Spark.</p>
                         </div>
                         <div className="mt-2 relative">
+                        <p className='font-public text-left font-medium text-base text-red-500 mt-2'>{emailPasswordError}</p>
                             <div className="text-left py-2">
                                 <label className='font-poppins font-medium text-xl text-[#343a40]'>Email</label>
                             </div>
