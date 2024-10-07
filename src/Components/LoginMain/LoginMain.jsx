@@ -6,8 +6,11 @@ import { Link, useNavigate } from 'react-router-dom';
 import { GoogleAuthProvider, getAuth, signInWithEmailAndPassword, signInWithPopup } from "firebase/auth";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { useDispatch } from 'react-redux';
+import { userLoginInfo } from '../../slice/userSlice';
 
 const LoginMain = () => {
+    const dispatch = useDispatch()
     const auth = getAuth();
     const provider = new GoogleAuthProvider();
     const navigate = useNavigate()
@@ -46,11 +49,14 @@ const LoginMain = () => {
         }
         if (email && password && /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email) && /^(?=.*[0-9]).{8,16}$/.test(password)) {
             signInWithEmailAndPassword(auth, email, password)
-                .then(() => {
+                .then((user) => {
                     toast.success("Login Successfully!")
+                    dispatch(userLoginInfo(user.user))
                     setTimeout(() => {
                         navigate('/')
                         }, 3000)
+                        console.log("user namer",user.user.displayName);
+                        
                 }).catch((error) => {
                     if (error.code.includes('auth/invalid-credential')) {
                         setEmailPasswordError("Invalid-credential");
@@ -100,14 +106,14 @@ const LoginMain = () => {
                                 {
                                     lock ? <i onClick={hanleLock} className='bg-[#F8F9FA] font-poppins font-normal text-base text-[#343a40] rounded-l-xl p-[16.5px] border'><CiUnlock /></i> : <i onClick={hanleLock} className='bg-[#F8F9FA] font-poppins font-normal text-base text-[#343a40] rounded-l-xl p-[16.5px] border'><CiLock /></i>
                                 }
-                                <input onChange={handlepassword} className='border font-poppins font-normal text-base text-[#000] rounded-r-xl w-full py-3 px-3 outline-none' type="password" placeholder='Enter Password' />
+                                <input onChange={handlepassword} className='border font-poppins font-normal text-base text-[#000] rounded-r-xl w-full py-3 px-3 outline-none' type={`${lock ? "text" : "password"}`} placeholder='Enter Password' />
                             </div>
                             <div className="">
                                 <p className='font-poppins text-left font-medium text-base text-red-500 mt-2'>{passwordError}</p>
                                 {
                                     passwordError && <i className="text-red-500 text-xl absolute top-[60px] block right-[10px]"><MdErrorOutline className='' /></i>
                                 }
-                            <p className='font-poppins text-end py-2 font-medium text-base text-[#A9AEB7]'><a href='/forgot'>Forgot Password?</a></p>
+                            <p className='font-poppins text-end py-2 font-medium text-base text-[#A9AEB7]'><Link to='/forgotpassword'>Forgot Password?</Link></p>
                             </div>
                         </div>
                         <div className="flex w-64 mt-6 items-center border-2 border-border rounded-xl cursor-pointer">
