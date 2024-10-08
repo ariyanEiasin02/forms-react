@@ -52,6 +52,7 @@ const LoginMain = () => {
                 .then((user) => {
                     toast.success("Login Successfully!")
                     dispatch(userLoginInfo(user.user))
+                    localStorage.setItem("userLoginInfo",JSON.stringify(user.user))
                     setTimeout(() => {
                         navigate('/')
                         }, 3000)
